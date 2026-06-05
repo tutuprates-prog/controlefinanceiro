@@ -4,12 +4,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'screens/auth/login_screen.dart';
 
+import 'package:flutter/foundation.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Inicialização do SQLite para diferentes plataformas
-  // Para web: adicione sqflite_common_ffi_web na inicialização
-  // Para mobile/desktop: sqflite funciona nativamente
+  if (kIsWeb) {
+    // Para web
+    databaseFactory = databaseFactoryFfiWeb;
+  } else {
+    // Para desktop (Windows, Linux, macOS) ou testes
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
 
   runApp(
     const ProviderScope(
